@@ -147,3 +147,12 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+#Prisma stuff
+generated/
+dist/
+coverage/
+
+.agents/
+.claude/
+.windsurf/
