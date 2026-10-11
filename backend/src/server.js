@@ -1,38 +1,27 @@
 
 import "dotenv/config";
 import express from "express";
-import prisma from "./config/database.js";
+import cors from "cors";
+import profileRoutes from "./routes/profileRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+//import prisma from "./config/database.js";
 
 const app = express();
 const PORT = process.env.PORT || 5050;
 
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+}));
+
 app.use(express.json());
 
-//temp
-app.get("/", (req, res) => {
-  res.json({
-    message: "Smart Library API is running",
-  });
+// Test endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ message: "Smart Library API is running!" });
 });
 
-//temp
-app.get("/api/health", async (req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-
-    res.json({
-      status: "OK",
-      database: "Connected",
-    });
-  } catch (error) {
-    console.error("Database connection failed:", error.message);
-
-    res.status(500).json({
-      status: "ERROR",
-      database: "Disconnected",
-    });
-  }
-});
+app.use("/api/profiles", profileRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Smart Library API running on port ${PORT}`);
