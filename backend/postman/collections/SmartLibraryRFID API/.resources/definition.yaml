@@ -1,12 +1,12 @@
 $kind: collection
 description: |-
   API collection for the SmartLibraryRFID backend.
+  Covers authentication (register, sign-in, next-step) and user profile management.
 
-  Built with Express + Supabase Auth + Prisma (PostgreSQL).
-
-  ## Authentication
-  Protected endpoints require a Bearer token obtained from the Sign In response (`session.access_token`).
-  Set the `access_token` variable after signing in and it will be used automatically.
+  ## Getting started
+  1. Select the **SmartLibraryRFID - Local** environment.
+  2. Run **Register** to create an account, then **Sign In** — the access token is saved automatically to `access_token`.
+  3. Use **Complete Profile** to submit your profile for approval, then **Get My Profile** to verify it.
 variables:
   base_url: http://localhost:5050
   access_token: ""

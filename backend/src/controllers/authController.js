@@ -126,4 +126,47 @@ export const register = async (req, res) => {
   }
 };
 
+export const getNextStep = async (req, res) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
+  res.set('Pragma', 'no-cache')
+  res.set('Expires', '0')
+  try {
+    const authHeader = req.headers.authorization
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Missing access token",
+      })
+    }
+
+    const token = authHeader.slice(7)
+
+    // Verify the Supabase access token
+    const { data, error } = await supabase.auth.getUser(token)
+
+    if (error || !data.user) {
+      return res.status(401).json({
+        message: "Invalid or expired access token",
+      })
+    }
+
+    // Find the corresponding library profile
+    const profile = await prisma.profile.findUnique({
+      where: { id: data.user.id },
+    })
+
+    return res.status(200).json({
+      nextStep: profile
+        ? "DASHBOARD"
+        : "COMPLETE_PROFILE",
+    })
+  } catch (error) {
+    console.error("Get next step error:", error)
+
+    return res.status(500).json({
+      message: "Unable to determine next step",
+    })
+  }
+}
+
 

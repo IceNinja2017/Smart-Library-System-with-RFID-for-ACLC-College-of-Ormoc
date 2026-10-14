@@ -2,6 +2,11 @@ $kind: http-request
 order: 1000
 method: POST
 url: '{{base_url}}/api/profiles/complete'
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'
 headers:
   - key: Content-Type
     value: application/json

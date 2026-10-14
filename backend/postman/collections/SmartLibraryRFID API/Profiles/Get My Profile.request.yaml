@@ -2,3 +2,8 @@ $kind: http-request
 order: 2000
 method: GET
 url: '{{base_url}}/api/profiles/me'
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'
