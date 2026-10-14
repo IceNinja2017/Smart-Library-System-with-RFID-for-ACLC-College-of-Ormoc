@@ -156,3 +156,9 @@ coverage/
 .agents/
 .claude/
 .windsurf/
+
+# Exclude Postman local application data and cache
+.postman/
+
+# Optional: Exclude specific Postman environment files if they contain secrets
+# postman/*environment.json

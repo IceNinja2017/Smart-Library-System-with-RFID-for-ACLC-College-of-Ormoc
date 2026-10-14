@@ -1,0 +1,12 @@
+$kind: collection
+name: Profiles
+description: |-
+  Profile management endpoints. All requests require a valid Bearer token.
+
+  Set the `access_token` collection variable (automatically populated by the Sign In request)
+  and it will be sent as the Authorization header.
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'

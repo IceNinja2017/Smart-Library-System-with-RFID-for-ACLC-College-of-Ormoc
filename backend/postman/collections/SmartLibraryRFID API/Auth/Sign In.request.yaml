@@ -1,0 +1,24 @@
+$kind: http-request
+order: 2000
+method: POST
+url: '{{base_url}}/api/auth/signin'
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "email": "user@example.com",
+      "password": "password123"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      // Automatically save the access token after a successful sign-in
+      const res = pm.response.json();
+      if (res.session && res.session.access_token) {
+        pm.collectionVariables.set("access_token", res.session.access_token);
+        console.log("access_token saved to collection variables.");
+      }

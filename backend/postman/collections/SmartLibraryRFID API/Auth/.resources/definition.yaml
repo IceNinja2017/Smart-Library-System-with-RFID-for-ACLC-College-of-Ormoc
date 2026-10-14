@@ -1,0 +1,5 @@
+$kind: collection
+name: Auth
+description: |-
+  Authentication endpoints using Supabase Auth.
+  No token required for these requests.
