@@ -1,4 +1,3 @@
-
 import {
   createContext,
   useContext,
@@ -11,6 +10,13 @@ import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 const API_URL = import.meta.env.VITE_API_URL
+
+const ALLOWED_NEXT_STEPS = [
+  'COMPLETE_PROFILE',
+  'PENDING_APPROVAL',
+  'PROFILE_REJECTED',
+  'DASHBOARD',
+]
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
@@ -28,12 +34,16 @@ export function AuthProvider({ children }) {
         const { data, error } = await supabase.auth.getSession()
 
         if (!active) return
-
         if (error) throw error
 
         setSession(data.session ?? null)
-      } catch (error) {
-        setSession(null)
+      } catch {
+        if (active) {
+          setSession(null)
+          setProfileError(
+            'Unable to restore your session. Please sign in again.'
+          )
+        }
       } finally {
         if (active) setLoading(false)
       }
@@ -61,7 +71,7 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
-  // Ask the backend whether the user needs to complete their profile.
+  // Ask the backend for the user's profile and approval status.
   const refreshNextStep = useCallback(async () => {
     const accessToken = session?.access_token
 
@@ -110,9 +120,7 @@ export function AuthProvider({ children }) {
         )
       }
 
-      if (
-        !['COMPLETE_PROFILE', 'DASHBOARD'].includes(result.nextStep)
-      ) {
+      if (!ALLOWED_NEXT_STEPS.includes(result.nextStep)) {
         throw new Error(
           `Unexpected nextStep value: ${String(result.nextStep)}`
         )
@@ -120,7 +128,9 @@ export function AuthProvider({ children }) {
 
       setNextStep(result.nextStep)
     } catch (error) {
+      // Do not grant access when the status cannot be verified.
       setNextStep(null)
+
       setProfileError(
         error instanceof Error
           ? error.message
@@ -131,7 +141,7 @@ export function AuthProvider({ children }) {
     }
   }, [session?.access_token])
 
-  // Refresh profile status whenever the authenticated session is ready.
+  // Refresh status when the authenticated session becomes available.
   useEffect(() => {
     if (loading) return
 
@@ -140,6 +150,7 @@ export function AuthProvider({ children }) {
     } else {
       setNextStep(null)
       setProfileError('')
+      setProfileLoading(false)
     }
   }, [loading, session?.access_token, refreshNextStep])
 

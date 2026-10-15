@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CheckCircle2, UserRound, BookOpen } from 'lucide-react'
+import { UserRound, BookOpen } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 
 export default function CompleteProfile() {
   const navigate = useNavigate()
-  const { session } = useAuth()
+  const { session, refreshNextStep } = useAuth()
 
   const [form, setForm] = useState({
     fullName: '',
@@ -16,7 +16,6 @@ export default function CompleteProfile() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
 
   const isStudent = form.requestedRole === 'STUDENT'
 
@@ -52,7 +51,7 @@ export default function CompleteProfile() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/complete-profile`,
+        `${import.meta.env.VITE_API_URL}/profiles/complete`,
         {
           method: 'POST',
           headers: {
@@ -76,49 +75,15 @@ export default function CompleteProfile() {
         )
       }
 
-      setSuccess(true)
+      // Fetch the newly created profile's actual approval status.
+      await refreshNextStep()
+
+      navigate('/pending-approval', { replace: true })
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
       setLoading(false)
     }
-  }
-
-  if (success) {
-    return (
-      <section className="mx-auto w-full max-w-lg rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center shadow-[var(--shadow-card)] sm:p-8">
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-          <CheckCircle2 size={34} />
-        </div>
-
-        <h1 className="text-2xl font-bold text-[var(--color-text)]">
-          Profile submitted!
-        </h1>
-
-        <p className="mt-3 text-sm leading-6 text-[var(--color-text-muted)]">
-          Your profile has been submitted for approval. You can access
-          the library once your account has been approved.
-        </p>
-
-        <div className="mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-background)] p-4 text-left">
-          <p className="text-sm font-semibold text-[var(--color-text)]">
-            What happens next?
-          </p>
-          <p className="mt-1 text-sm leading-6 text-[var(--color-text-muted)]">
-            Your school librarian will review your submitted information.
-            You will be able to use the library once your account is approved.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => navigate('/login', { replace: true })}
-          className="mt-6 w-full rounded-xl bg-[var(--color-primary)] px-4 py-3 font-semibold text-white transition hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:ring-offset-2"
-        >
-          Return to login
-        </button>
-      </section>
-    )
   }
 
   return (

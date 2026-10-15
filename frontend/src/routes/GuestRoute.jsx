@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '../auth/AuthProvider'
 
 import Login from '../pages/Login'
@@ -16,20 +16,37 @@ export default function GuestRoute() {
     return <p>Loading...</p>
   }
 
-  // Signed out: show login
+  // Signed out: show the login page on the index route.
   if (!user) {
     return <Login />
   }
 
-  // Signed in, but profile status could not be verified
+  // Signed in, but profile status could not be verified.
   if (!nextStep) {
-    return <p>{profileError || 'Unable to verify your profile status.'}</p>
+    return (
+      <div className="p-6 text-center text-[var(--color-text)]">
+        <p>
+          {profileError || 'Unable to verify your profile status.'}
+        </p>
+      </div>
+    )
   }
 
-  // Signed in: redirect to the appropriate page
-  if (nextStep === 'COMPLETE_PROFILE') {
-    return <Navigate to="/complete-profile" replace />
-  }
+  // Send authenticated users to the correct page.
+  switch (nextStep) {
+    case 'COMPLETE_PROFILE':
+      return <Navigate to="/complete-profile" replace />
 
-  return <Navigate to="/" replace />
+    case 'PENDING_APPROVAL':
+      return <Navigate to="/pending-approval" replace />
+
+    case 'PROFILE_REJECTED':
+      return <Navigate to="/profile-rejected" replace />
+
+    case 'DASHBOARD':
+      return <Navigate to="/" replace />
+
+    default:
+      return <p>Unable to determine your account status.</p>
+  }
 }

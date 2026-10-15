@@ -81,51 +81,6 @@ export const signIn = async (req, res) => {
 };
 
 
-export const register = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (
-      typeof email !== "string" ||
-      !email.trim() ||
-      typeof password !== "string" ||
-      password.length < 8
-    ) {
-      return res.status(400).json({
-        message: "A valid email and password of at least 8 characters are required",
-      });
-    }
-
-    const { data, error } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-    });
-
-    if (error) {
-      return res.status(400).json({
-        message: error.message,
-      });
-    }
-
-    return res.status(201).json({
-      message: data.session
-        ? "Registration successful. You can now sign in."
-        : "Registration successful. Please check your email to confirm your account.",
-      user: {
-        id: data.user?.id,
-        email: data.user?.email,
-      },
-      requiresEmailConfirmation: !data.session,
-    });
-  } catch (error) {
-    console.error("Registration error:", error);
-
-    return res.status(500).json({
-      message: "Registration failed. Please try again later.",
-    });
-  }
-};
-
 export const getNextStep = async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
   res.set('Pragma', 'no-cache')
@@ -155,11 +110,32 @@ export const getNextStep = async (req, res) => {
       where: { id: data.user.id },
     })
 
-    return res.status(200).json({
-      nextStep: profile
-        ? "DASHBOARD"
-        : "COMPLETE_PROFILE",
-    })
+    if (!profile) {
+      return res.status(200).json({
+        nextStep: 'COMPLETE_PROFILE',
+      })
+    }
+
+    if (profile.approvalStatus === 'PENDING') {
+      return res.status(200).json({
+        nextStep: 'PENDING_APPROVAL',
+      })
+    }
+
+    if (profile.approvalStatus === 'REJECTED') {
+      return res.status(200).json({
+        nextStep: 'PROFILE_REJECTED',
+      })
+    }
+
+    if (
+      profile.approvalStatus === 'APPROVED' &&
+      profile.role !== 'PENDING'
+    ) {
+      return res.status(200).json({
+        nextStep: 'DASHBOARD',
+      })
+    }
   } catch (error) {
     console.error("Get next step error:", error)
 
@@ -168,5 +144,71 @@ export const getNextStep = async (req, res) => {
     })
   }
 }
+
+
+export const registerUser = async (req, res) => {
+  try {
+    const { email, password, confirmPassword } = req.body;
+
+    // Validate required fields
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string" ||
+      typeof confirmPassword !== "string"
+    ) {
+      return res.status(400).json({
+        message: "Email, password, and confirmation password are required.",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!normalizedEmail || normalizedEmail.length > 254) {
+      return res.status(400).json({
+        message: "Please enter a valid email address.",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long.",
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        message: "Passwords do not match.",
+      });
+    }
+
+    // Create the account through Supabase Auth.
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        emailRedirectTo: `${process.env.FRONTEND_URL}/verify-email`,
+      },
+    });
+
+    if (error) {
+      return res.status(400).json({
+        message: error.message,
+      });
+    }
+
+    return res.status(201).json({
+      message:
+        "Registration received. Please check your email to verify your account.",
+      requiresEmailVerification: true,
+      // Do not expose passwords or session tokens.
+    });
+  } catch (error) {
+    console.error("Registration error:", error.message);
+
+    return res.status(500).json({
+      message: "An unexpected error occurred during registration.",
+    });
+  }
+};
 
 

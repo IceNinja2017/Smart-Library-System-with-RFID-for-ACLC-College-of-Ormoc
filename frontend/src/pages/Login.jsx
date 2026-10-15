@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { BookOpen, LibraryBig } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -164,10 +164,18 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Footer */}
-        <p className="mt-6 text-center text-xs leading-5 text-[var(--color-text-muted)]">
-          Need an account? Contact your school librarian.
-        </p>
+        {/* Registration link */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-[var(--color-text-muted)]">
+            Don't have an account yet?{' '}
+            <Link
+              to="/register"
+              className="font-semibold text-[var(--color-primary)] transition hover:text-[var(--color-primary-hover)] hover:underline focus:outline-none focus:underline"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
 
         {/* School-color accent */}
         <div className="mt-6 flex h-1 overflow-hidden rounded-full">

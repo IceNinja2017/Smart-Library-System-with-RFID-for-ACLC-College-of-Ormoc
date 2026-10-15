@@ -13,6 +13,9 @@ import CompleteProfile from './pages/CompleteProfile'
 import NotFound from './pages/NotFound'
 import ProtectedRoute from './routes/ProtectedRoute'
 import GuestRoute from './routes/GuestRoute'
+import Register from './pages/Register'
+import VerifyEmail from './pages/VerifyEmail'
+import PendingApproval from './pages/PendingApproval'
 
 function AppRoutes() {
   return (
@@ -22,6 +25,9 @@ function AppRoutes() {
         path="/login"
         element={<GuestRoute />}
       />
+      <Route path="/register" element={<Register />} />
+      <Route path="/verify-email" element={<VerifyEmail />} />
+
 
       {/* Complete Profile: shared layout, restricted sidebar */}
       <Route
@@ -33,6 +39,18 @@ function AppRoutes() {
         }
       >
         <Route index element={<CompleteProfile />} />
+      </Route>
+
+            {/* Pending Approval: restricted access while awaiting review */}
+      <Route
+        path="/pending-approval"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout mode="profile" />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<PendingApproval />} />
       </Route>
 
       {/* Main dashboard: full sidebar access */}
