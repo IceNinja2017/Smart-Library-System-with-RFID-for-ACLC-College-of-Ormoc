@@ -85,12 +85,13 @@ export const getNextStep = async (req, res) => {
   res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private')
   res.set('Pragma', 'no-cache')
   res.set('Expires', '0')
+
   try {
     const authHeader = req.headers.authorization
 
-    if (!authHeader?.startsWith("Bearer ")) {
+    if (!authHeader?.startsWith('Bearer ')) {
       return res.status(401).json({
-        message: "Missing access token",
+        message: 'Missing access token',
       })
     }
 
@@ -101,7 +102,7 @@ export const getNextStep = async (req, res) => {
 
     if (error || !data.user) {
       return res.status(401).json({
-        message: "Invalid or expired access token",
+        message: 'Invalid or expired access token',
       })
     }
 
@@ -110,37 +111,37 @@ export const getNextStep = async (req, res) => {
       where: { id: data.user.id },
     })
 
+    let nextStep
+
     if (!profile) {
-      return res.status(200).json({
-        nextStep: 'COMPLETE_PROFILE',
-      })
-    }
-
-    if (profile.approvalStatus === 'PENDING') {
-      return res.status(200).json({
-        nextStep: 'PENDING_APPROVAL',
-      })
-    }
-
-    if (profile.approvalStatus === 'REJECTED') {
-      return res.status(200).json({
-        nextStep: 'PROFILE_REJECTED',
-      })
-    }
-
-    if (
+      nextStep = 'COMPLETE_PROFILE'
+    } else if (profile.approvalStatus === 'PENDING') {
+      nextStep = 'PENDING_APPROVAL'
+    } else if (profile.approvalStatus === 'REJECTED') {
+      nextStep = 'PROFILE_REJECTED'
+    } else if (
       profile.approvalStatus === 'APPROVED' &&
-      profile.role !== 'PENDING'
+      ['ADMIN', 'STUDENT', 'TEACHER'].includes(profile.role)
     ) {
-      return res.status(200).json({
-        nextStep: 'DASHBOARD',
+      nextStep = 'DASHBOARD'
+    } else {
+      // Fail closed for invalid or inconsistent profile states
+      return res.status(403).json({
+        message: 'Your profile status is invalid. Please contact the librarian.',
       })
     }
+
+    // Return the result once
+    return res.status(200).json({
+      nextStep,
+      role: profile?.role ?? null,
+      approvalStatus: profile?.approvalStatus ?? null,
+    })
   } catch (error) {
-    console.error("Get next step error:", error)
+    console.error('Get next step error:', error)
 
     return res.status(500).json({
-      message: "Unable to determine next step",
+      message: 'Unable to determine next step',
     })
   }
 }

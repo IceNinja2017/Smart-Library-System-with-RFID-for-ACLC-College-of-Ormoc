@@ -16,6 +16,7 @@ import GuestRoute from './routes/GuestRoute'
 import Register from './pages/Register'
 import VerifyEmail from './pages/VerifyEmail'
 import PendingApproval from './pages/PendingApproval'
+import ProfileRejected from './pages/ProfileRejected'
 
 function AppRoutes() {
   return (
@@ -51,6 +52,17 @@ function AppRoutes() {
         }
       >
         <Route index element={<PendingApproval />} />
+      </Route>
+
+      <Route
+        path="/profile-rejected"
+        element={
+          <ProtectedRoute>
+            <DashboardLayout mode="profile" />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<ProfileRejected />} />
       </Route>
 
       {/* Main dashboard: full sidebar access */}

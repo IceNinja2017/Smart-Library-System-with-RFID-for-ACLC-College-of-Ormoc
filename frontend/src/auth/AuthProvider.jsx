@@ -18,9 +18,25 @@ const ALLOWED_NEXT_STEPS = [
   'DASHBOARD',
 ]
 
+const ALLOWED_ROLES = [
+  'ADMIN',
+  'STUDENT',
+  'TEACHER',
+  'PENDING',
+]
+
+const ALLOWED_APPROVAL_STATUSES = [
+  'PENDING',
+  'APPROVED',
+  'REJECTED',
+]
+
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [nextStep, setNextStep] = useState(null)
+  const [role, setRole] = useState(null)
+  const [approvalStatus, setApprovalStatus] = useState(null)
+
   const [loading, setLoading] = useState(true)
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState('')
@@ -40,6 +56,9 @@ export function AuthProvider({ children }) {
       } catch {
         if (active) {
           setSession(null)
+          setNextStep(null)
+          setRole(null)
+          setApprovalStatus(null)
           setProfileError(
             'Unable to restore your session. Please sign in again.'
           )
@@ -60,6 +79,8 @@ export function AuthProvider({ children }) {
 
       if (!newSession) {
         setNextStep(null)
+        setRole(null)
+        setApprovalStatus(null)
         setProfileError('')
         setProfileLoading(false)
       }
@@ -77,9 +98,11 @@ export function AuthProvider({ children }) {
 
     if (!accessToken) {
       setNextStep(null)
+      setRole(null)
+      setApprovalStatus(null)
       setProfileError('')
       setProfileLoading(false)
-      return
+      return null
     }
 
     setProfileLoading(true)
@@ -126,16 +149,60 @@ export function AuthProvider({ children }) {
         )
       }
 
+      const validRole =
+        result.role == null || ALLOWED_ROLES.includes(result.role)
+
+      const validApprovalStatus =
+        result.approvalStatus == null ||
+        ALLOWED_APPROVAL_STATUSES.includes(result.approvalStatus)
+
+      if (!validRole || !validApprovalStatus) {
+        throw new Error('The server returned an invalid profile status.')
+      }
+
+      // Ensure the returned values are consistent with the next step.
+      if (
+        result.nextStep === 'DASHBOARD' &&
+        (
+          !['ADMIN', 'STUDENT', 'TEACHER'].includes(result.role) ||
+          result.approvalStatus !== 'APPROVED'
+        )
+      ) {
+        throw new Error('Your account status could not be verified.')
+      }
+
+      if (
+        result.nextStep === 'PENDING_APPROVAL' &&
+        result.approvalStatus !== 'PENDING'
+      ) {
+        throw new Error('Your account status could not be verified.')
+      }
+
+      if (
+        result.nextStep === 'PROFILE_REJECTED' &&
+        result.approvalStatus !== 'REJECTED'
+      ) {
+        throw new Error('Your account status could not be verified.')
+      }
+
       setNextStep(result.nextStep)
+      setRole(result.role ?? null)
+      setApprovalStatus(result.approvalStatus ?? null)
+
+      return result.nextStep
     } catch (error) {
-      // Do not grant access when the status cannot be verified.
+      // Fail closed if the account status cannot be verified.
       setNextStep(null)
+      setRole(null)
+      setApprovalStatus(null)
 
       setProfileError(
         error instanceof Error
           ? error.message
           : 'Unable to verify your profile status.'
       )
+
+      return null
     } finally {
       setProfileLoading(false)
     }
@@ -149,6 +216,8 @@ export function AuthProvider({ children }) {
       refreshNextStep()
     } else {
       setNextStep(null)
+      setRole(null)
+      setApprovalStatus(null)
       setProfileError('')
       setProfileLoading(false)
     }
@@ -159,6 +228,8 @@ export function AuthProvider({ children }) {
     user: session?.user ?? null,
     loading,
     nextStep,
+    role,
+    approvalStatus,
     setNextStep,
     profileLoading,
     profileError,
