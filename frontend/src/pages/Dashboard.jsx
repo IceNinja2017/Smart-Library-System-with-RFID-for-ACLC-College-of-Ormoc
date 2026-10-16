@@ -1,178 +1,162 @@
-
 import {
   BookOpen,
-  BookMarked,
-  Clock3,
-  Users,
-  ArrowRight,
-  Radio,
+  CalendarCheck,
+  CircleAlert,
+  ScanLine,
+  Cloud,
+  ShieldCheck,
 } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import StatCard from '../components/StatCard'
 
-const recentActivity = [
+const systemFeatures = [
   {
-    id: 1,
-    student: 'Sample Student',
-    action: 'Borrowed a book',
-    book: 'Introduction to Computing',
-    status: 'Borrowed',
+    icon: ScanLine,
+    text: 'RFID-based book scanning',
+    color: 'text-[var(--color-secondary)]',
   },
   {
-    id: 2,
-    student: 'Sample Teacher',
-    action: 'Returned a book',
-    book: 'Research Methods',
-    status: 'Returned',
+    icon: CalendarCheck,
+    text: 'Automatic borrowing and return tracking',
+    color: 'text-[var(--color-primary)]',
   },
   {
-    id: 3,
-    student: 'Sample Student 2',
-    action: 'Borrowed a book',
-    book: 'Web Development Basics',
-    status: 'Borrowed',
+    icon: Cloud,
+    text: 'Cloud-based book image storage',
+    color: 'text-[var(--color-secondary)]',
+  },
+  {
+    icon: BookOpen,
+    text: 'Three-day due date policy for borrowings',
+    color: 'text-[var(--color-primary)]',
+  },
+  {
+    icon: CircleAlert,
+    text: 'Late return penalty policy',
+    color: 'text-[var(--color-secondary)]',
   },
 ]
 
+const libraryGuidelines = [
+  {
+    icon: CalendarCheck,
+    text: 'Return borrowed books on or before their due dates',
+    color: 'text-[var(--color-secondary)]',
+  },
+  {
+    icon: BookOpen,
+    text: 'Handle library books with care',
+    color: 'text-[var(--color-primary)]',
+  },
+  {
+    icon: ScanLine,
+    text: 'RFID scanning is required for supported transactions',
+    color: 'text-[var(--color-secondary)]',
+  },
+  {
+    icon: ShieldCheck,
+    text: 'Report lost or damaged books to library staff promptly',
+    color: 'text-[var(--color-primary)]',
+  },
+]
+
+function InfoCard({ title, description, items, accent, icon: HeaderIcon }) {
+  return (
+    <section className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)]">
+      <div className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
+
+      <div className="p-5 sm:p-6">
+        <div className="mb-5 flex items-start gap-3">
+          <div className="rounded-xl bg-[var(--color-background)] p-3 text-[var(--color-primary)]">
+            <HeaderIcon size={23} />
+          </div>
+
+          <div>
+            <h2 className="text-lg font-bold text-[var(--color-text)] sm:text-xl">
+              {title}
+            </h2>
+
+            <p className="mt-1 text-sm leading-5 text-[var(--color-text-muted)]">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        <ul className="space-y-4">
+          {items.map(({ icon: Icon, text, color }) => (
+            <li key={text} className="flex items-start gap-3">
+              <Icon
+                size={18}
+                className={`mt-0.5 shrink-0 ${color}`}
+              />
+
+              <span className="text-sm leading-6 text-[var(--color-text)]">
+                {text}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
 export default function Dashboard() {
   return (
-    <div className="space-y-8">
-      <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-sm font-medium text-emerald-700">
-            LIBRARY OVERVIEW
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
-            Dashboard
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            Monitor your library collection and borrowing activity.
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Welcome section */}
+      <section>
+        <p className="text-sm font-semibold text-[var(--color-primary)]">
+          STUDENT & TEACHER PORTAL
+        </p>
 
-        <Link
-          to="/books"
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-700 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-800"
-        >
-          <BookOpen size={18} />
-          Browse books
-        </Link>
+        <h1 className="mt-1 text-2xl font-bold tracking-tight text-[var(--color-text)] sm:text-3xl">
+          Library Dashboard
+        </h1>
+
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--color-text-muted)]">
+          Welcome to the Smart Library. Explore library resources,
+          keep track of your borrowing responsibilities, and review
+          the guidelines for using library services.
+        </p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title="Total book copies"
-          value="1,248"
-          description="Sample inventory"
+      {/* Information cards */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <InfoCard
+          title="System Overview"
+          description="Learn how our library system works."
+          items={systemFeatures}
+          accent="bg-[var(--color-secondary)]"
           icon={BookOpen}
-          color="emerald"
         />
-        <StatCard
-          title="Currently borrowed"
-          value="186"
-          description="Sample active loans"
-          icon={BookMarked}
-          color="blue"
+
+        <InfoCard
+          title="Library Guidelines"
+          description="Help keep library resources available for everyone."
+          items={libraryGuidelines}
+          accent="bg-[var(--color-primary)]"
+          icon={ShieldCheck}
         />
-        <StatCard
-          title="Overdue loans"
-          value="12"
-          description="Sample overdue count"
-          icon={Clock3}
-          color="amber"
+      </div>
+
+      {/* Reminder */}
+      <section className="flex items-start gap-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/5 p-4">
+        <CircleAlert
+          size={20}
+          className="mt-0.5 shrink-0 text-[var(--color-primary)]"
         />
-        <StatCard
-          title="Registered members"
-          value="342"
-          description="Sample student and teacher accounts"
-          icon={Users}
-          color="violet"
-        />
-      </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.7fr_1fr]">
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <div>
-              <h2 className="font-semibold text-slate-900">
-                Recent activity
-              </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                Example borrowing and return records
-              </p>
-            </div>
-            <Clock3 className="text-slate-400" size={20} />
-          </div>
+        <div>
+          <h2 className="text-sm font-semibold text-[var(--color-text)]">
+            Borrowing reminder
+          </h2>
 
-          <div className="divide-y divide-slate-100">
-            {recentActivity.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div>
-                  <p className="text-sm font-medium text-slate-800">
-                    {item.student}
-                  </p>
-                  <p className="mt-1 text-sm text-slate-500">
-                    {item.action}: {item.book}
-                  </p>
-                </div>
-                <span
-                  className={`w-fit rounded-full px-3 py-1 text-xs font-medium ${
-                    item.status === 'Returned'
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'bg-emerald-50 text-emerald-700'
-                  }`}
-                >
-                  {item.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-slate-200 bg-white p-5">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-emerald-50 p-3 text-emerald-700">
-              <Radio size={23} />
-            </div>
-            <div>
-              <h2 className="font-semibold text-slate-900">
-                RFID scanning
-              </h2>
-              <p className="text-xs text-slate-500">
-                Integration placeholder
-              </p>
-            </div>
-          </div>
-
-          <p className="mt-5 text-sm leading-6 text-slate-600">
-            Connect your RFID reader to record scans and validate
-            borrowing or return requests through the backend.
+          <p className="mt-1 text-sm leading-6 text-[var(--color-text-muted)]">
+            Check your borrowing records and due dates regularly.
+            Contact library staff if a book is lost, damaged, or
+            cannot be returned on time.
           </p>
-
-          <div className="mt-5 rounded-lg bg-slate-50 p-4">
-            <p className="text-sm font-medium text-slate-800">
-              Device status
-            </p>
-            <p className="mt-1 text-sm text-slate-500">
-              No device connected yet
-            </p>
-          </div>
-
-          <Link
-            to="/books"
-            className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-900"
-          >
-            View book catalog <ArrowRight size={16} />
-          </Link>
         </div>
       </section>
-
-      <p className="text-xs text-slate-400">
-        Demo dashboard — displayed counts and activity are not live library data.
-      </p>
     </div>
   )
 }

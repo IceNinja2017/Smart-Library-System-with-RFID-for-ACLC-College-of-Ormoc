@@ -11,7 +11,7 @@ export default function Login() {
   const [error, setError] = useState('')
 
   const navigate = useNavigate()
-  const { setNextStep } = useAuth()
+  const { setNextStep, refreshNextStep } = useAuth()
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -46,7 +46,12 @@ export default function Login() {
       }
 
       if (
-        !['COMPLETE_PROFILE', 'DASHBOARD'].includes(result.nextStep)
+        ![
+          'COMPLETE_PROFILE',
+          'PENDING_APPROVAL',
+          'PROFILE_REJECTED',
+          'DASHBOARD',
+        ].includes(result.nextStep)
       ) {
         throw new Error('Invalid nextStep returned by server.')
       }
@@ -61,10 +66,71 @@ export default function Login() {
 
       setNextStep(result.nextStep)
 
+      // Route according to the server's profile status.
       if (result.nextStep === 'COMPLETE_PROFILE') {
         navigate('/complete-profile', { replace: true })
-      } else {
+        return
+      }
+
+      if (result.nextStep === 'PENDING_APPROVAL') {
+        navigate('/pending-approval', { replace: true })
+        return
+      }
+
+      if (result.nextStep === 'PROFILE_REJECTED') {
+        navigate('/profile-rejected', { replace: true })
+        return
+      }
+
+      // Refresh the profile state to get the verified role.
+      if (typeof refreshNextStep !== 'function') {
+        throw new Error(
+          'Profile refresh is unavailable. Please try again.'
+        )
+      }
+
+      const profileResult = await refreshNextStep()
+
+      // Read the role from AuthProvider after refreshing.
+      // AuthProvider must expose the updated role.
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser()
+
+      if (userError || !userData?.user) {
+        throw new Error('Unable to verify your signed-in account.')
+      }
+
+      // Refreshing the provider updates its role, but React state
+      // updates are asynchronous. Fetch the verified profile instead.
+      const profileResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/profile/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${result.session.access_token}`,
+          },
+        }
+      )
+
+      const profileData = await profileResponse.json().catch(() => ({}))
+
+      if (!profileResponse.ok || !profileData.profile) {
+        throw new Error(
+          profileData.message || 'Unable to load your profile.'
+        )
+      }
+
+      const role = profileData.profile.role
+
+      if (profileData.profile.approvalStatus !== 'APPROVED') {
+        throw new Error('Your account is not approved for dashboard access.')
+      }
+
+      if (role === 'ADMIN') {
+        navigate('/admin', { replace: true })
+      } else if (role === 'STUDENT' || role === 'TEACHER') {
         navigate('/', { replace: true })
+      } else {
+        throw new Error('Your account does not have a valid dashboard role.')
       }
     } catch (err) {
       setError(err.message || 'Unable to sign in.')
@@ -76,7 +142,6 @@ export default function Login() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--color-background)] px-4 py-10">
       <section className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 shadow-[var(--shadow-card)]">
-        {/* Branding */}
         <div className="mb-8 flex items-center gap-3">
           <div className="rounded-xl bg-[var(--color-primary)] p-3 text-white">
             <LibraryBig size={28} />
@@ -92,7 +157,6 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Heading */}
         <h2 className="text-2xl font-bold text-[var(--color-text)]">
           Welcome back
         </h2>
@@ -101,7 +165,6 @@ export default function Login() {
           Sign in with your library account.
         </p>
 
-        {/* Login form */}
         <form onSubmit={handleSubmit} className="mt-6 space-y-5">
           <div>
             <label
@@ -143,7 +206,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Error message */}
           {error && (
             <p
               role="alert"
@@ -153,7 +215,6 @@ export default function Login() {
             </p>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -164,7 +225,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Registration link */}
         <div className="mt-6 text-center">
           <p className="text-sm text-[var(--color-text-muted)]">
             Don't have an account yet?{' '}
@@ -177,7 +237,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* School-color accent */}
         <div className="mt-6 flex h-1 overflow-hidden rounded-full">
           <div className="w-1/2 bg-[var(--color-primary)]" />
           <div className="w-1/2 bg-[var(--color-secondary)]" />

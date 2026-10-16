@@ -10,6 +10,7 @@ export default function GuestRoute() {
     nextStep,
     profileLoading,
     profileError,
+    role,
   } = useAuth()
 
   if (loading || (user && profileLoading)) {
@@ -44,6 +45,9 @@ export default function GuestRoute() {
       return <Navigate to="/profile-rejected" replace />
 
     case 'DASHBOARD':
+      if (role === 'ADMIN') {
+        return <Navigate to="/admin/" replace />
+      }
       return <Navigate to="/" replace />
 
     default:

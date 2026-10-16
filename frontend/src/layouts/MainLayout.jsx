@@ -13,18 +13,32 @@ import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../auth/AuthProvider'
 
-const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/books', label: 'Book catalog', icon: BookOpen },
-  { to: '/my-loans', label: 'My loans', icon: UserRound },
-]
-
-export default function DashboardLayout({ mode = 'dashboard' }) {
-  const { user } = useAuth()
+export default function MainLayout({ mode = 'dashboard' }) {
+  const { user, role } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const isProfileMode = mode === 'profile'
+
+  const dashboardPath = role === 'ADMIN' ? '/admin' : '/'
+
+  const links = [
+    {
+      to: dashboardPath,
+      label: 'Dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      to: '/books',
+      label: 'Book catalog',
+      icon: BookOpen,
+    },
+    {
+      to: '/my-loans',
+      label: 'My loans',
+      icon: UserRound,
+    },
+  ]
 
   async function logout() {
     const { error } = await supabase.auth.signOut()

@@ -5,77 +5,121 @@ import {
 } from 'react-router-dom'
 
 import { AuthProvider } from './auth/AuthProvider'
-import DashboardLayout from './layouts/DashboardLayout'
+
+import MainLayout from './layouts/MainLayout'
+import AdminLayout from './layouts/AdminLayout'
+
+// Admin pages
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AccountApprovals from './pages/admin/AccountApprovals'
+import BooksInventory from './pages/admin/BooksInventory'
+import Members from './pages/admin/Members'
+import BorrowingReturns from './pages/admin/BorrowingReturns'
+import RFIDScanner from './pages/admin/RFIDScanner'
+
+// General pages
 import Dashboard from './pages/Dashboard'
 import Books from './pages/Books'
 import Login from './pages/Login'
-import CompleteProfile from './pages/CompleteProfile'
-import NotFound from './pages/NotFound'
-import ProtectedRoute from './routes/ProtectedRoute'
-import GuestRoute from './routes/GuestRoute'
 import Register from './pages/Register'
-import VerifyEmail from './pages/VerifyEmail'
+import CompleteProfile from './pages/CompleteProfile'
 import PendingApproval from './pages/PendingApproval'
 import ProfileRejected from './pages/ProfileRejected'
+import NotFound from './pages/NotFound'
+import VerifyEmail from './pages/VerifyEmail'
+import Unauthorized from './pages/Unauthorized'
+
+// Route guards
+import ProtectedRoute from './routes/ProtectedRoute'
+import GuestRoute from './routes/GuestRoute'
+import RoleRoute from './routes/RoleRoute'
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Guest routes */}
-      <Route
-        path="/login"
-        element={<GuestRoute />}
-      />
-      <Route path="/register" element={<Register />} />
+      <Route element={<GuestRoute />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+
       <Route path="/verify-email" element={<VerifyEmail />} />
 
+      <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* Complete Profile: shared layout, restricted sidebar */}
+      {/* Complete Profile */}
       <Route
         path="/complete-profile"
         element={
           <ProtectedRoute>
-            <DashboardLayout mode="profile" />
+            <MainLayout mode="profile" />
           </ProtectedRoute>
         }
       >
         <Route index element={<CompleteProfile />} />
       </Route>
 
-            {/* Pending Approval: restricted access while awaiting review */}
+      {/* Pending Approval */}
       <Route
         path="/pending-approval"
         element={
           <ProtectedRoute>
-            <DashboardLayout mode="profile" />
+            <MainLayout mode="profile" />
           </ProtectedRoute>
         }
       >
         <Route index element={<PendingApproval />} />
       </Route>
 
+      {/* Rejected Profile */}
       <Route
         path="/profile-rejected"
         element={
           <ProtectedRoute>
-            <DashboardLayout mode="profile" />
+            <MainLayout mode="profile" />
           </ProtectedRoute>
         }
       >
         <Route index element={<ProfileRejected />} />
       </Route>
 
-      {/* Main dashboard: full sidebar access */}
+      {/* Main application layout */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardLayout mode="dashboard" />
+            <MainLayout mode="dashboard" />
           </ProtectedRoute>
         }
       >
-        <Route index element={<Dashboard />} />
+        {/* Student and teacher dashboard */}
+        <Route
+          index
+          element={
+            <RoleRoute allowedRoles={['STUDENT', 'TEACHER']}>
+              <Dashboard />
+            </RoleRoute>
+          }
+        />
+
         <Route path="books" element={<Books />} />
+
+        {/* Admin section nested inside MainLayout */}
+        <Route
+          path="admin"
+          element={
+            <RoleRoute allowedRoles={['ADMIN']}>
+              <AdminLayout />
+            </RoleRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+          <Route path="approvals" element={<AccountApprovals />} />
+          <Route path="books" element={<BooksInventory />} />
+          <Route path="members" element={<Members />} />
+          <Route path="transactions" element={<BorrowingReturns />} />
+          <Route path="rfid" element={<RFIDScanner />} />
+        </Route>
       </Route>
 
       {/* Fallback */}

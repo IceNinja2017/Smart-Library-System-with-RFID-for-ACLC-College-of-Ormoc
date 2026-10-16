@@ -159,3 +159,134 @@ export const getMyProfile = async (req, res) => {
     });
   }
 };
+
+export const getPendingProfiles = async (req, res) => {
+  try {
+    const profiles = await prisma.profile.findMany({
+      where: {
+        approvalStatus: 'PENDING',
+        requestedRole: {
+          in: ['STUDENT', 'TEACHER'],
+        },
+      },
+      select: {
+        id: true,
+        fullName: true,
+        usn: true,
+        requestedRole: true,
+        approvalStatus: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    })
+
+    res.json(profiles)
+  } catch (error) {
+    console.error('Get pending profiles error:', error)
+    res.status(500).json({ message: 'Failed to fetch pending profiles' })
+  }
+}
+
+export const approveProfile = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const profile = await prisma.profile.findUnique({
+      where: { id },
+    })
+
+    if (!profile || profile.approvalStatus !== 'PENDING') {
+      return res.status(404).json({
+        message: 'Pending application not found',
+      })
+    }
+
+    const updatedProfile = await prisma.profile.update({
+      where: { id },
+      data: {
+        role: profile.requestedRole,
+        approvalStatus: 'APPROVED',
+        reviewedAt: new Date(),
+        rejectionReason: null,
+      },
+    })
+
+    res.json({
+      message: 'Application approved successfully',
+      profile: updatedProfile,
+    })
+  } catch (error) {
+    console.error('Approve profile error:', error)
+    res.status(500).json({ message: 'Failed to approve application' })
+  }
+}
+
+export const rejectProfile = async (req, res) => {
+  try {
+    const { id } = req.params
+    const { rejectionReason } = req.body
+
+    const profile = await prisma.profile.findUnique({
+      where: { id },
+    })
+
+    if (!profile || profile.approvalStatus !== 'PENDING') {
+      return res.status(404).json({
+        message: 'Pending application not found',
+      })
+    }
+
+    const updatedProfile = await prisma.profile.update({
+      where: { id },
+      data: {
+        role: 'PENDING',
+        approvalStatus: 'REJECTED',
+        rejectionReason: rejectionReason?.trim() || null,
+        reviewedAt: new Date(),
+      },
+    })
+
+    res.json({
+      message: 'Application rejected successfully',
+      profile: updatedProfile,
+    })
+  } catch (error) {
+    console.error('Reject profile error:', error)
+    res.status(500).json({ message: 'Failed to reject application' })
+  }
+}
+
+export const getApprovedMembers = async (req, res) => {
+  try {
+    const members = await prisma.profile.findMany({
+      where: {
+        approvalStatus: "APPROVED",
+        role: {
+          in: ["STUDENT", "TEACHER"],
+        },
+      },
+      select: {
+        id: true,
+        fullName: true,
+        usn: true,
+        contactNumber: true,
+        role: true,
+        createdAt: true,
+      },
+      orderBy: {
+        fullName: "asc",
+      },
+    });
+
+    res.json(members);
+  } catch (error) {
+    console.error("Get approved members error:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch members",
+    });
+  }
+};
+

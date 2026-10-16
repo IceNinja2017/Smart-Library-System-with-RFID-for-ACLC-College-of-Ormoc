@@ -1,8 +1,16 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { BookOpen, ArrowLeft, House, SearchX } from 'lucide-react'
+import { useAuth } from '../auth/AuthProvider'
 
 export default function NotFound() {
   const navigate = useNavigate()
+  const { role, loading, profileLoading } = useAuth()
+
+  if (loading || profileLoading) {
+    return <p className="p-6 text-center">Loading...</p>
+  }
+
+  const backPage = role === 'ADMIN' ? '/admin' : '/'
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--color-background)] px-4 py-12">
@@ -40,7 +48,7 @@ export default function NotFound() {
           {/* Actions */}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
-              to="/"
+              to={backPage}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--color-primary)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-primary-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/40 focus:ring-offset-2"
             >
               <House size={18} />

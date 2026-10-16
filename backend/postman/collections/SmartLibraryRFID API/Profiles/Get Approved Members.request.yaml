@@ -1,0 +1,10 @@
+$kind: http-request
+name: Get Approved Members
+order: 3000
+method: GET
+url: '{{base_url}}/api/profiles/members'
+auth:
+  type: bearer
+  credentials:
+    - key: token
+      value: '{{access_token}}'
