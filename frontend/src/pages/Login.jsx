@@ -149,10 +149,10 @@ export default function Login() {
 
           <div>
             <h1 className="text-xl font-bold tracking-tight text-[var(--color-text)]">
-              Smart Library
+              BookSmart
             </h1>
             <p className="text-sm text-[var(--color-text-muted)]">
-              School Library Management
+              School Library Management for ACLC Ormoc
             </p>
           </div>
         </div>

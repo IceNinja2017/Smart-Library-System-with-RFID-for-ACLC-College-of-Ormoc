@@ -10,7 +10,7 @@ export async function requireAdmin(req, res, next) {
     if (!profile || profile.role !== "ADMIN") {
       return res.status(403).json({
         message: "Admin access required",
-      });
+      }); 
     }
 
     next();

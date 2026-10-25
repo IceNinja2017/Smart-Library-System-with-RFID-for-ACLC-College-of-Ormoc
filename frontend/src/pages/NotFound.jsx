@@ -66,7 +66,7 @@ export default function NotFound() {
           </div>
 
           <p className="mt-8 text-xs text-[var(--color-text-muted)]">
-            Smart Library · School Library Management
+            BookSmart · School Library Management
           </p>
         </div>
       </section>

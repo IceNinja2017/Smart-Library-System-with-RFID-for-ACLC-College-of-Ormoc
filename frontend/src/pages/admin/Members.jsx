@@ -103,7 +103,7 @@ export default function Members() {
           </h1>
 
           <p className="mt-2 text-sm text-[var(--color-text-muted)]">
-            View and manage approved students and teachers in Smart Library.
+            View and manage approved students and teachers in BookSmart.
           </p>
         </div>
 

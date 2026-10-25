@@ -81,7 +81,7 @@ export default function MainLayout({ mode = 'dashboard' }) {
           </div>
 
           <div>
-            <p className="font-bold tracking-tight">Smart Library</p>
+            <p className="font-bold tracking-tight">BookSmart</p>
             <p className="text-xs text-white/70">Library portal</p>
           </div>
 

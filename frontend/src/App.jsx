@@ -40,8 +40,8 @@ function AppRoutes() {
       {/* Guest routes */}
       <Route element={<GuestRoute />}>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
       </Route>
+      <Route path="/register" element={<Register />} />
 
       <Route path="/verify-email" element={<VerifyEmail />} />
 

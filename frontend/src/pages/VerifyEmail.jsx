@@ -80,7 +80,7 @@ export default function VerifyEmail() {
 
         setStatus("success");
         setMessage(
-          "Your email has been verified. You can now sign in to Smart Library."
+          "Your email has been verified. You can now sign in to BookSmart."
         );
 
         // Keep this app's flow explicit: verification, then login.
@@ -140,7 +140,7 @@ export default function VerifyEmail() {
         </div>
 
         <p className="mb-2 text-sm font-semibold uppercase tracking-[0.15em] text-[var(--color-primary)]">
-          Smart Library
+          BookSmart
         </p>
 
         <h1 className="text-2xl font-bold tracking-tight text-[var(--color-text)] sm:text-3xl">

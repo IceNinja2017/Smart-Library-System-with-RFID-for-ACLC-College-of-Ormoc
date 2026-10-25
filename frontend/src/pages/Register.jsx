@@ -144,7 +144,7 @@ export default function Register() {
               </div>
 
               <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-white/75">
-                Smart Library
+                BookSmart
               </p>
 
               <h1 className="max-w-sm text-4xl font-bold leading-tight xl:text-5xl">
@@ -152,13 +152,13 @@ export default function Register() {
               </h1>
 
               <p className="mt-5 max-w-sm leading-7 text-white/80">
-                Create your account to get started with your school's smart
+                Create your account to get started with ACLC Ormoc's Smart
                 library system.
               </p>
             </div>
 
             <div className="relative border-t border-white/20 pt-5 text-sm text-white/75">
-              Smart Library · RFID-enabled library access
+              BookSmart · RFID-enabled library access
             </div>
           </aside>
 
@@ -169,7 +169,7 @@ export default function Register() {
                 <span aria-hidden="true">▤</span>
               </div>
               <p className="text-sm font-semibold text-[var(--color-primary)]">
-                SMART LIBRARY
+                BOOKSMART
               </p>
             </div>
 
@@ -219,7 +219,7 @@ export default function Register() {
                     CREATE AN ACCOUNT
                   </p>
                   <h2 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
-                    Join Smart Library
+                    Join BookSmart now!
                   </h2>
                   <p className="mt-2 text-sm leading-6 text-[var(--color-text-muted)]">
                     Register with your email and create a secure password.

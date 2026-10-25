@@ -75,7 +75,7 @@ export default function ProfileRejected() {
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-[var(--color-text-muted)]">
-            Unfortunately, your Smart Library account application
+            Unfortunately, your BookSmart account application
             was not approved. You cannot access the library system
             at this time.
           </p>
@@ -106,7 +106,7 @@ export default function ProfileRejected() {
           </a>
 
           <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-            Smart Library · School Library Management
+            BookSmart · School Library Management
           </p>
         </div>
       </section>

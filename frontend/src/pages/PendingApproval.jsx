@@ -23,7 +23,7 @@ export default function PendingApproval() {
       </div>
 
       <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-secondary)]">
-        Smart Library
+        BookSmart
       </p>
 
       <h1 className="mt-3 text-2xl font-bold text-[var(--color-text)]">

@@ -136,7 +136,7 @@ export default function AccountApprovals() {
         </h1>
         <p className="mt-2 text-sm text-[var(--color-text-muted)]">
           Review registration details and decide which applicants can access
-          Smart Library.
+          BookSmart.
         </p>
       </section>
 

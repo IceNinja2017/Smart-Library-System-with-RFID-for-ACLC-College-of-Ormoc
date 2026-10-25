@@ -95,7 +95,7 @@ export default function CompleteProfile() {
         </div>
 
         <p className="text-sm font-semibold uppercase tracking-wider text-[var(--color-secondary)]">
-          Smart Library
+          BookSmart
         </p>
 
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-[var(--color-text)] sm:text-3xl">

@@ -61,7 +61,7 @@ export default function AdminLayout() {
 
             <div className="min-w-0">
               <h1 className="truncate text-base font-bold text-[var(--color-text)]">
-                Smart Library
+                BookSmart
               </h1>
               <p className="text-xs text-[var(--color-text-muted)]">
                 Administration Portal
@@ -112,7 +112,7 @@ export default function AdminLayout() {
       </main>
 
       <footer className="border-t border-[var(--color-border)] px-4 py-5 text-center text-xs text-[var(--color-text-muted)]">
-        Smart Library · School Library Management System
+        BookSmart · School Library Management System
       </footer>
     </div>
   )

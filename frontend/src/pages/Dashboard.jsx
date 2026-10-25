@@ -113,7 +113,7 @@ export default function Dashboard() {
         </h1>
 
         <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--color-text-muted)]">
-          Welcome to the Smart Library. Explore library resources,
+          Welcome to the BookSmart. Explore library resources,
           keep track of your borrowing responsibilities, and review
           the guidelines for using library services.
         </p>
