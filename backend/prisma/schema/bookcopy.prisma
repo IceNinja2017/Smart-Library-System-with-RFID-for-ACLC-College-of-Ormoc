@@ -1,0 +1,10 @@
+model BookCopy {
+  id          String   @id @default(uuid()) @db.Uuid
+  bookId      String   @db.Uuid
+  rfidTag     String?  @unique
+  available   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  book        Book     @relation(fields: [bookId], references: [id], onDelete: Restrict)
+}
