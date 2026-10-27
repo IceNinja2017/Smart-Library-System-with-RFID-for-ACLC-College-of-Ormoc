@@ -1,0 +1,22 @@
+enum BorrowStatus {
+  BORROWED
+  RETURNED
+}
+
+enum UserRole {
+  PENDING
+  ADMIN
+  STUDENT
+  TEACHER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RequestedRole {
+  STUDENT
+  TEACHER
+}

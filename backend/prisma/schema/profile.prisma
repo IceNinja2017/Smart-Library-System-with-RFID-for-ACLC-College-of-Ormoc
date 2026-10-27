@@ -1,34 +1,17 @@
-
-enum UserRole {
-  PENDING
-  ADMIN
-  STUDENT
-  TEACHER
-}
-
-enum ApprovalStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum RequestedRole {
-  STUDENT
-  TEACHER
-}
-
 model Profile {
   id              String         @id @db.Uuid
   fullName        String         @map("full_name")
   role            UserRole       @default(PENDING)
   approvalStatus  ApprovalStatus @default(PENDING) @map("approval_status")
-  requestedRole RequestedRole? @map("requested_role")
+  requestedRole   RequestedRole? @map("requested_role")
   contactNumber   String?        @map("contact_number")
   usn             String?        @unique
   rejectionReason String?        @map("rejection_reason")
   reviewedAt      DateTime?      @map("reviewed_at")
   createdAt       DateTime       @default(now()) @map("created_at")
   updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  borrowTransactions BorrowTransaction[]
 
   @@map("profiles")
 }
