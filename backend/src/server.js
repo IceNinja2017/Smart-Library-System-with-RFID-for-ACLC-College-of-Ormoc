@@ -4,6 +4,7 @@ import express from "express";
 import cors from "cors";
 import profileRoutes from "./routes/profileRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import bookRoutes from "./routes/bookRoutes.js";
 //import prisma from "./config/database.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/profiles", profileRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/books", bookRoutes);
 
 app.listen(PORT, () => {
   console.log(`Smart Library API running on port ${PORT}`);
