@@ -207,14 +207,67 @@ export const addBookCopy = async (req, res) => {
 
 // GET /api/books
 // List active books
+// GET /api/books?search=harry&author=Rowling&category=Fantasy
 export const getBooks = async (req, res) => {
   try {
+    const { search, author, category } = req.query
+
+    const where = {
+      archivedAt: null,
+    }
+
+    // Search by title, author, or ISBN
+    if (typeof search === 'string' && search.trim()) {
+      const keyword = search.trim()
+
+      where.OR = [
+        {
+          title: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
+        },
+        {
+          author: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
+        },
+        {
+          isbn: {
+            contains: keyword,
+            mode: 'insensitive',
+          },
+        },
+      ]
+    }
+
+    // Filter by author
+    if (typeof author === 'string' && author.trim()) {
+      where.author = {
+        contains: author.trim(),
+        mode: 'insensitive',
+      }
+    }
+
+    // Filter by category
+    if (typeof category === 'string' && category.trim()) {
+      where.category = {
+        equals: category.trim(),
+        mode: 'insensitive',
+      }
+    }
+
     const books = await prisma.book.findMany({
-      where: { archivedAt: null },
+      where,
       include: {
-        _count: { select: { copies: true } },
+        _count: {
+          select: { copies: true },
+        },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     return res.status(200).json({
@@ -222,7 +275,10 @@ export const getBooks = async (req, res) => {
     })
   } catch (error) {
     console.error('Get books error:', error)
-    return res.status(500).json({ message: 'Failed to fetch books.' })
+
+    return res.status(500).json({
+      message: 'Failed to fetch books.',
+    })
   }
 }
 
