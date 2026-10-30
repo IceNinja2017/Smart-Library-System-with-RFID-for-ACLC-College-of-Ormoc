@@ -260,7 +260,7 @@ export const getBooks = async (req, res) => {
     // Filter by category
     if (typeof category === 'string' && category.trim()) {
       where.category = {
-        equals: category.trim(),
+        contains: category.trim(),
         mode: 'insensitive',
       }
     }
