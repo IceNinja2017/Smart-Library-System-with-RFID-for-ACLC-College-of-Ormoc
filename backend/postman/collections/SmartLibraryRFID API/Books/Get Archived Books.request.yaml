@@ -1,0 +1,9 @@
+$kind: http-request
+order: 3000
+method: GET
+url: '{{base_url}}/api/books/archived'
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+    description: 'Admin access token required'
+examples: './.resources/Get Archived Books.resources/examples'

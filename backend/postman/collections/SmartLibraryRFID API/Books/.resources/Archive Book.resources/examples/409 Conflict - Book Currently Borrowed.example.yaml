@@ -1,0 +1,18 @@
+$kind: http-example
+name: '409 Conflict - Book Currently Borrowed'
+order: 3000
+request:
+  url: '{{base_url}}/api/books/clx1a2b3c4d5e6f7g8h9i0j1/archive'
+  method: PATCH
+response:
+  statusCode: 409
+  statusText: Conflict
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "This book has a copy currently borrowed. Process its return before archiving the book."
+      }

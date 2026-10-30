@@ -1,0 +1,26 @@
+$kind: http-request
+order: 4000
+method: POST
+url: '{{base_url}}/api/books'
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+    description: 'Admin access token required'
+body:
+  type: json
+  content: |-
+    {
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "isbn": "978-0-7432-7356-5",
+      "category": "Fiction",
+      "shelfNumber": "A-12",
+      "imageUrl": null,
+      "copies": [
+        { "rfidTag": "RFID-001" },
+        { "rfidTag": "RFID-002" }
+      ]
+    }
+examples: './.resources/Add Book.resources/examples'

@@ -1,0 +1,18 @@
+$kind: http-example
+name: '401 Unauthorized'
+order: 2000
+request:
+  url: '{{base_url}}/api/books/archived'
+  method: GET
+response:
+  statusCode: 401
+  statusText: Unauthorized
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "Missing or invalid access token."
+      }

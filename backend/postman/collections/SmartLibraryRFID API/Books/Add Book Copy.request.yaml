@@ -1,0 +1,21 @@
+$kind: http-request
+order: 5000
+method: POST
+url: '{{base_url}}/api/books/:bookId/copies'
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+    description: 'Admin access token required'
+pathVariables:
+  - key: bookId
+    value: ''
+    description: 'The ID of the book to add a copy to'
+body:
+  type: json
+  content: |-
+    {
+      "rfidTag": "RFID-003"
+    }
+examples: './.resources/Add Book Copy.resources/examples'

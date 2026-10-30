@@ -1,0 +1,13 @@
+$kind: http-request
+order: 8000
+method: PATCH
+url: '{{base_url}}/api/books/:bookId/restore'
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+    description: 'Admin access token required'
+pathVariables:
+  - key: bookId
+    value: ''
+    description: 'The ID of the archived book to restore'
+examples: './.resources/Restore Book.resources/examples'

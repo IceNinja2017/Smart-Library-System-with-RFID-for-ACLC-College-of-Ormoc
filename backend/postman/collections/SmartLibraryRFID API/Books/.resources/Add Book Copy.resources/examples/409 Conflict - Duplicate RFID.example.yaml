@@ -1,0 +1,18 @@
+$kind: http-example
+name: '409 Conflict - Duplicate RFID'
+order: 4000
+request:
+  url: '{{base_url}}/api/books/clx1a2b3c4d5e6f7g8h9i0j1/copies'
+  method: POST
+response:
+  statusCode: 409
+  statusText: Conflict
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "This RFID tag is already registered to another copy."
+      }

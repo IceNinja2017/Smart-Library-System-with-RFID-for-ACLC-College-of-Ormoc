@@ -1,0 +1,9 @@
+$kind: http-request
+order: 2000
+method: GET
+url: '{{base_url}}/api/books/:bookId'
+pathVariables:
+  - key: bookId
+    value: ''
+    description: 'The ID of the book to retrieve'
+examples: './.resources/Get Book by ID.resources/examples'

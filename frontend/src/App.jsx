@@ -8,6 +8,7 @@ import { AuthProvider } from './auth/AuthProvider'
 
 import MainLayout from './layouts/MainLayout'
 import AdminLayout from './layouts/AdminLayout'
+import Footer from './pages/Footer'
 
 // Admin pages
 import AdminDashboard from './pages/admin/AdminDashboard'
@@ -28,6 +29,7 @@ import ProfileRejected from './pages/ProfileRejected'
 import NotFound from './pages/NotFound'
 import VerifyEmail from './pages/VerifyEmail'
 import Unauthorized from './pages/Unauthorized'
+import BookDetails from './pages/BookDetails'
 
 // Route guards
 import ProtectedRoute from './routes/ProtectedRoute'
@@ -103,6 +105,7 @@ function AppRoutes() {
         />
 
         <Route path="books" element={<Books />} />
+        <Route path="books/:bookId" element={<BookDetails />} />
 
         {/* Admin section nested inside MainLayout */}
         <Route
@@ -133,6 +136,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <Footer />
       </AuthProvider>
     </BrowserRouter>
   )

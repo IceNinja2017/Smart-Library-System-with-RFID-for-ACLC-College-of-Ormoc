@@ -1,0 +1,42 @@
+$kind: http-example
+name: '200 OK'
+order: 1000
+request:
+  url: '{{base_url}}/api/books/clx1a2b3c4d5e6f7g8h9i0j1'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "data": {
+          "id": "clx1a2b3c4d5e6f7g8h9i0j1",
+          "title": "The Great Gatsby",
+          "author": "F. Scott Fitzgerald",
+          "isbn": "978-0-7432-7356-5",
+          "category": "Fiction",
+          "shelfNumber": "A-12",
+          "imageUrl": null,
+          "archivedAt": null,
+          "createdAt": "2026-10-01T08:00:00.000Z",
+          "copies": [
+            {
+              "id": "copy-id-001",
+              "bookId": "clx1a2b3c4d5e6f7g8h9i0j1",
+              "rfidTag": "RFID-001",
+              "createdAt": "2026-10-01T08:00:00.000Z"
+            },
+            {
+              "id": "copy-id-002",
+              "bookId": "clx1a2b3c4d5e6f7g8h9i0j1",
+              "rfidTag": "RFID-002",
+              "createdAt": "2026-10-01T08:00:00.000Z"
+            }
+          ]
+        }
+      }

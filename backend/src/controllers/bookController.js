@@ -1,8 +1,8 @@
 
-import { Prisma } from '@prisma/client'
-import { prisma } from '../lib/prisma.js'
+import prisma from "../config/database.js";
 
 // POST /api/books
+
 export const addBook = async (req, res) => {
   try {
     const {
@@ -12,6 +12,7 @@ export const addBook = async (req, res) => {
       category,
       shelfNumber,
       imageUrl,
+      synopsis,
       copies,
     } = req.body
 
@@ -71,14 +72,20 @@ export const addBook = async (req, res) => {
     const normalizedImageUrl =
       typeof imageUrl === 'string' ? imageUrl.trim() || null : imageUrl ?? null
 
+    const normalizedSynopsis =
+      typeof synopsis === 'string' ? synopsis.trim() || null : synopsis ?? null
+
     if (
       (normalizedIsbn !== null && typeof normalizedIsbn !== 'string') ||
       (normalizedShelf !== null && typeof normalizedShelf !== 'string') ||
       (normalizedImageUrl !== null &&
-        typeof normalizedImageUrl !== 'string')
+        typeof normalizedImageUrl !== 'string') ||
+      (normalizedSynopsis !== null &&
+        typeof normalizedSynopsis !== 'string')
     ) {
       return res.status(400).json({
-        message: 'ISBN, shelf number, and image URL must be strings or null.',
+        message:
+          'ISBN, shelf number, image URL, and synopsis must be strings or null.',
       })
     }
 
@@ -96,8 +103,7 @@ export const addBook = async (req, res) => {
     }
 
     // Create one catalogue entry and all its physical copies.
-    // Prisma's nested write is atomic: if a copy fails, the book
-    // and its other copies are not partially saved.
+    // Prisma's nested write is atomic.
     const book = await prisma.book.create({
       data: {
         title: title.trim(),
@@ -106,6 +112,7 @@ export const addBook = async (req, res) => {
         category: normalizedCategory,
         shelfNumber: normalizedShelf,
         imageUrl: normalizedImageUrl,
+        synopsis: normalizedSynopsis,
 
         copies: {
           create: copies.map((copy) => ({
@@ -129,7 +136,7 @@ export const addBook = async (req, res) => {
     console.error('Add book error:', error)
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       return res.status(409).json({
@@ -191,7 +198,7 @@ export const addBookCopy = async (req, res) => {
     console.error('Add book copy error:', error)
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       return res.status(409).json({
@@ -312,6 +319,7 @@ export const getBookById = async (req, res) => {
 // PUT /api/books/:bookId
 // Update catalogue information only, not physical copies
 
+
 export const updateBook = async (req, res) => {
   try {
     const { bookId } = req.params
@@ -323,6 +331,7 @@ export const updateBook = async (req, res) => {
       category,
       shelfNumber,
       imageUrl,
+      synopsis,
       copies,
     } = req.body
 
@@ -470,6 +479,20 @@ export const updateBook = async (req, res) => {
           : null
     }
 
+    // Validate and update optional synopsis
+    if (synopsis !== undefined) {
+      if (synopsis !== null && typeof synopsis !== 'string') {
+        return res.status(400).json({
+          message: 'Synopsis must be a string or null.',
+        })
+      }
+
+      data.synopsis =
+        typeof synopsis === 'string'
+          ? synopsis.trim() || null
+          : null
+    }
+
     // 4. Update book and its specified copies atomically
     const updatedBook = await prisma.$transaction(async (tx) => {
       if (copies !== undefined && copies.length > 0) {
@@ -572,7 +595,7 @@ export const updateBook = async (req, res) => {
     console.error('Update book error:', error)
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error instanceof prisma.PrismaClientKnownRequestError &&
       error.code === 'P2002'
     ) {
       return res.status(409).json({
@@ -693,6 +716,63 @@ export const restoreBook = async (req, res) => {
     console.error('Restore book error:', error)
     return res.status(500).json({
       message: 'Failed to restore book.',
+    })
+  }
+}
+
+
+export const checkRfidTag = async (req, res) => {
+  try {
+    const { rfidTag, copyId } = req.body
+
+    // Validate scanned RFID tag
+    if (
+      typeof rfidTag !== 'string' ||
+      !rfidTag.trim()
+    ) {
+      return res.status(400).json({
+        message: 'A valid RFID tag is required.',
+      })
+    }
+
+    const normalizedTag = rfidTag.trim()
+
+    // Check whether the scanned tag is already registered
+    const existingCopy = await prisma.bookCopy.findFirst({
+      where: {
+        rfidTag: normalizedTag,
+
+        // Exclude the current copy when updating its RFID tag
+        ...(typeof copyId === 'string' && copyId.trim()
+          ? {
+              id: {
+                not: copyId.trim(),
+              },
+            }
+          : {}),
+      },
+      select: {
+        id: true,
+        bookId: true,
+      },
+    })
+
+    if (existingCopy) {
+      return res.status(409).json({
+        available: false,
+        message: 'This RFID tag is already registered.',
+      })
+    }
+
+    return res.status(200).json({
+      available: true,
+      message: 'RFID tag is available for registration.',
+    })
+  } catch (error) {
+    console.error('Check RFID tag error:', error)
+
+    return res.status(500).json({
+      message: 'Failed to validate RFID tag.',
     })
   }
 }

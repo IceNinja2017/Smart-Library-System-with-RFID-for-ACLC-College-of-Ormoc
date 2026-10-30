@@ -1,0 +1,24 @@
+$kind: http-example
+name: '201 Created'
+order: 1000
+request:
+  url: '{{base_url}}/api/books/clx1a2b3c4d5e6f7g8h9i0j1/copies'
+  method: POST
+response:
+  statusCode: 201
+  statusText: Created
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "message": "Physical book copy added successfully.",
+        "data": {
+          "id": "copy-id-003",
+          "bookId": "clx1a2b3c4d5e6f7g8h9i0j1",
+          "rfidTag": "RFID-003",
+          "createdAt": "2026-10-30T06:10:00.000Z"
+        }
+      }

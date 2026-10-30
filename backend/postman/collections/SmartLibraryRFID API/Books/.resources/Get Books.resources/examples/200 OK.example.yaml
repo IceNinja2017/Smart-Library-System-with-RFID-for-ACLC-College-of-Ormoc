@@ -1,0 +1,47 @@
+$kind: http-example
+name: '200 OK'
+order: 1000
+request:
+  url: '{{base_url}}/api/books'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "data": [
+          {
+            "id": "clx1a2b3c4d5e6f7g8h9i0j1",
+            "title": "The Great Gatsby",
+            "author": "F. Scott Fitzgerald",
+            "isbn": "978-0-7432-7356-5",
+            "category": "Fiction",
+            "shelfNumber": "A-12",
+            "imageUrl": null,
+            "archivedAt": null,
+            "createdAt": "2026-10-01T08:00:00.000Z",
+            "_count": {
+              "copies": 2
+            }
+          },
+          {
+            "id": "clx2b3c4d5e6f7g8h9i0j1k2",
+            "title": "To Kill a Mockingbird",
+            "author": "Harper Lee",
+            "isbn": "978-0-06-112008-4",
+            "category": "Fiction",
+            "shelfNumber": "A-13",
+            "imageUrl": null,
+            "archivedAt": null,
+            "createdAt": "2026-10-02T09:00:00.000Z",
+            "_count": {
+              "copies": 1
+            }
+          }
+        ]
+      }

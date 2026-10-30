@@ -1,0 +1,33 @@
+$kind: http-example
+name: '200 OK'
+order: 1000
+request:
+  url: '{{base_url}}/api/books/archived'
+  method: GET
+response:
+  statusCode: 200
+  statusText: OK
+  headers:
+    - key: Content-Type
+      value: application/json
+  body:
+    type: json
+    content: |-
+      {
+        "data": [
+          {
+            "id": "clx3c4d5e6f7g8h9i0j1k2l3",
+            "title": "Old Yeller",
+            "author": "Fred Gipson",
+            "isbn": "978-0-06-080902-2",
+            "category": "Fiction",
+            "shelfNumber": "C-07",
+            "imageUrl": null,
+            "archivedAt": "2026-10-20T14:30:00.000Z",
+            "createdAt": "2026-09-15T10:00:00.000Z",
+            "_count": {
+              "copies": 1
+            }
+          }
+        ]
+      }
