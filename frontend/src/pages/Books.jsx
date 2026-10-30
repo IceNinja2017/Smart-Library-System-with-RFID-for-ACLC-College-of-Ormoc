@@ -170,7 +170,7 @@ export default function Books() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by title, author, or ISBN..."
+              placeholder="Search by title or ISBN..."
               className="w-full rounded-xl border py-3 pl-10 pr-4 text-sm outline-none transition focus:border-[#D62828] focus:ring-2 focus:ring-[#D62828]/15"
               style={{
                 borderColor: 'var(--color-border)',

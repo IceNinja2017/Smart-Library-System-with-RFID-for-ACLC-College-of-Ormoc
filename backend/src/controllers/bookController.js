@@ -223,19 +223,13 @@ export const getBooks = async (req, res) => {
       archivedAt: null,
     }
 
-    // Search by title, author, or ISBN
+    // Main Search: Book title or ISBN only
     if (typeof search === 'string' && search.trim()) {
       const keyword = search.trim()
 
       where.OR = [
         {
           title: {
-            contains: keyword,
-            mode: 'insensitive',
-          },
-        },
-        {
-          author: {
             contains: keyword,
             mode: 'insensitive',
           },
@@ -249,7 +243,7 @@ export const getBooks = async (req, res) => {
       ]
     }
 
-    // Filter by author
+    // Author Filter: Author name only
     if (typeof author === 'string' && author.trim()) {
       where.author = {
         contains: author.trim(),
@@ -257,7 +251,7 @@ export const getBooks = async (req, res) => {
       }
     }
 
-    // Filter by category
+    // Category Filter: Category name only
     if (typeof category === 'string' && category.trim()) {
       where.category = {
         contains: category.trim(),

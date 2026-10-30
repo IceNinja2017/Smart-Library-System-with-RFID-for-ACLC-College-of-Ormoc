@@ -1,7 +1,7 @@
 
-import { BookOpen } from 'lucide-react'
+import { BookOpen, Radio } from 'lucide-react'
 
-const BookCopies = ({ copies = [], imageUrl, isbn }) => {
+const BookCopies = ({ copies = [], imageUrl }) => {
   if (copies.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-gray-300 bg-white px-5 py-12 text-center">
@@ -20,51 +20,71 @@ const BookCopies = ({ copies = [], imageUrl, isbn }) => {
 
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-      {copies.map((copy) => (
-        <div
-          key={copy.id}
-          className="group relative aspect-[2/3] max-w-[280px] overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-[#1746A2] to-[#123780] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-        >
-          {/* Book Cover */}
-          {imageUrl ? (
-            <img
-              src={imageUrl}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-white/20">
-              <BookOpen size={70} strokeWidth={1} />
-            </div>
-          )}
+      {copies.map((copy) => {
+        const hasRfid = Boolean(copy.rfidTag?.trim())
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
+        return (
+          <div
+            key={copy.id}
+            className="group relative aspect-[2/3] max-w-[280px] overflow-hidden rounded-xl border border-gray-200 bg-gradient-to-br from-[#1746A2] to-[#123780] shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+          >
+            {/* Book Cover */}
+            {imageUrl ? (
+              <img
+                src={imageUrl}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center text-white/20">
+                <BookOpen size={70} strokeWidth={1} />
+              </div>
+            )}
 
-          {/* Copy Information */}
-          <div className="absolute inset-x-0 bottom-0 flex flex-col gap-2 p-3">
-            <span
-              className={`w-fit rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm ${
-                copy.available
-                  ? 'bg-green-600'
-                  : 'bg-red-600'
-              }`}
-            >
-              {copy.available ? 'Available' : 'Borrowed'}
-            </span>
+            {/* Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
 
-            <div>
-              <p className="text-[9px] font-semibold uppercase tracking-wider text-white/70">
-                ISBN
-              </p>
+            {/* Copy Information */}
+            <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 p-3">
+              <span
+                className={`w-fit rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-sm ${
+                  copy.available
+                    ? 'bg-green-600'
+                    : 'bg-red-600'
+                }`}
+              >
+                {copy.available ? 'Available' : 'Borrowed'}
+              </span>
 
-              <p className="break-all text-xs font-bold leading-snug text-white">
-                {isbn || 'Not provided'}
-              </p>
+                {/* RFID Indicator with Custom Tooltip */}
+                {hasRfid && (
+                <div className="group/rfid relative">
+                    <span
+                    aria-label={`RFID: ${copy.rfidTag}`}
+                    className="flex h-8 w-8 cursor-help items-center justify-center rounded-lg border border-white/30 bg-white/20 text-white backdrop-blur-sm transition hover:bg-white/30"
+                    >
+                    <Radio size={18} />
+                    </span>
+
+                    {/* Custom Tooltip */}
+                    <div className="pointer-events-none absolute bottom-full right-0 z-50 mb-2 w-max max-w-[220px] rounded-lg border border-white/10 bg-[#123780] px-3 py-2 text-xs font-medium text-white opacity-0 shadow-xl transition-all duration-200 group-hover/rfid:translate-y-0 group-hover/rfid:opacity-100 translate-y-1">
+                    <span className="mb-1 block text-[9px] font-bold uppercase tracking-wider text-white/60">
+                        RFID Tag
+                    </span>
+
+                    <span className="break-all">
+                        {copy.rfidTag}
+                    </span>
+
+                    {/* Tooltip Arrow */}
+                    <span className="absolute -bottom-1 right-3 h-2 w-2 rotate-45 bg-[#123780]" />
+                    </div>
+                </div>
+                )}
             </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
